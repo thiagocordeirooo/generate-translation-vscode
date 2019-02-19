@@ -9,7 +9,7 @@
 		"color": "#08165f",
 		"theme": "dark"
 	},
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"publisher": "thiagocordeirooo",
 	"license": "MIT",
 	"repository": {
@@ -24,6 +24,14 @@
 	},
 	"categories": [
 		"Other"
+	],
+	"keywords": [
+		"angular",
+		"i18n",
+		"internationalization",
+		"translations",
+		"translate",
+		"ngx-translate"
 	],
 	"activationEvents": [
 		"onCommand:generateTranslation.generate",
