@@ -53,19 +53,22 @@
 					"default": true,
 					"description": "Sort object after inserting translation."
 				},
-				"generate-translation.replaceOnTranslate": {
-					"type": "boolean",
-					"default": true,
-					"description": "Replace the selected text in HTML files after generating a translation string."
+				"generate-translation.replaceForLanguages": {
+					"type": "array",
+					"default": [
+						"html"
+					],
+					"description": "Define languages (html, javascript, vue, etc.) for which templateHtmlToReplace will be used."
 				},
-				"generate-translation.templateHtmlToReplace": {
+				"generate-translation.templateSnippetToReplace": {
 					"type": "string",
 					"default": "{{ 'i18n' | translate }}",
-					"description": "Template HTML to replace the selected text after generating a translation string. \n The string i18n will be replaced by the chosen key."
+					"description": "Template snippet to replace the selected text after generating a translation string. \n The string i18n will be replaced by the chosen key."
 				}
 			}
 		},
-		"commands": [{
+		"commands": [
+			{
 				"command": "generateTranslation.fromSelectedText",
 				"title": "Generate Translation: From selected text"
 			},

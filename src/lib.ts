@@ -62,12 +62,12 @@ export abstract class GenerateTranslation {
 
   private static replaceOnTranslate(textSelection: string) {
     const editor = window.activeTextEditor;
-    const replaceOnTranslate = workspace.getConfiguration('generate-translation').get('replaceOnTranslate');
-    const templateHtmlToReplace = <string>workspace.getConfiguration('generate-translation').get('templateHtmlToReplace');
+    const replaceForLanguages = <Array<string>>workspace.getConfiguration('generate-translation').get('replaceForLanguages');
+    const templateSnippetToReplace = <string>workspace.getConfiguration('generate-translation').get('templateSnippetToReplace');
 
-    if (editor && replaceOnTranslate && templateHtmlToReplace && editor.document.languageId === 'html') {
+    if (editor && replaceForLanguages.indexOf(editor.document.languageId) > -1 && templateSnippetToReplace) {
       editor.edit(editBuilder => {
-        editBuilder.replace(editor.selection, templateHtmlToReplace.replace('i18n', textSelection));
+        editBuilder.replace(editor.selection, templateSnippetToReplace.replace('i18n', textSelection));
       });
     }
   }
