@@ -1,99 +1,99 @@
 {
-	"name": "generate-translation",
-	"displayName": "Generate Translation",
-	"description": "A visual studio code extension for you to generate the translations without leaving the current file.",
-	"homepage": "https://github.com/thiagocordeirooo/generate-translation-vscode",
-	"author": "Thiago Cordeiro <thiagocordeirooo@gmail.com>",
-	"icon": "assets/logo-i18n.png",
-	"galleryBanner": {
-		"color": "#08165f",
-		"theme": "dark"
-	},
-	"version": "0.0.8",
-	"publisher": "thiagocordeirooo",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/thiagocordeirooo/generate-translation-vscode.git"
-	},
-	"bugs": {
-		"url": "https://github.com/thiagocordeirooo/generate-translation-vscode/issues"
-	},
-	"engines": {
-		"vscode": "^1.0.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"keywords": [
-		"angular",
-		"i18n",
-		"internationalization",
-		"translations",
-		"translate",
-		"ngx-translate"
-	],
-	"activationEvents": [
-		"onCommand:generateTranslation.generate",
-		"onCommand:generateTranslation.fromSelectedText"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"configuration": {
-			"type": "object",
-			"title": "generate-translation configuration",
-			"properties": {
-				"generate-translation.path": {
-					"type": "string",
-					"default": "/src/assets/i18n",
-					"description": "Path to find your i18n files."
-				},
-				"generate-translation.sort": {
-					"type": "boolean",
-					"default": true,
-					"description": "Sort object after inserting translation."
-				},
-				"generate-translation.replaceForLanguages": {
-					"type": "array",
-					"default": [
-						"html"
-					],
-					"description": "Define languages (html, javascript, vue, etc.) for which templateHtmlToReplace will be used."
-				},
-				"generate-translation.templateSnippetToReplace": {
-					"type": "string",
-					"default": "{{ 'i18n' | translate }}",
-					"description": "Template snippet to replace the selected text after generating a translation string. \n The string i18n will be replaced by the chosen key."
-				}
-			}
-		},
-		"commands": [
-			{
-				"command": "generateTranslation.fromSelectedText",
-				"title": "Generate Translation: From selected text"
-			},
-			{
-				"command": "generateTranslation.generate",
-				"title": "Generate Translation: Generate"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "npm run compile && node ./node_modules/vscode/bin/test"
-	},
-	"devDependencies": {
-		"typescript": "^3.1.4",
-		"vscode": "^1.1.25",
-		"tslint": "^5.8.0",
-		"@types/node": "^8.10.25",
-		"@types/mocha": "^2.2.42"
-	},
-	"dependencies": {
-		"dot-prop-immutable": "^1.5.0",
-		"fs": "0.0.1-security"
-	}
+  "name": "generate-translation",
+  "displayName": "Generate Translation",
+  "description": "A visual studio code extension for you to generate the translations without leaving the current file.",
+  "homepage": "https://github.com/thiagocordeirooo/generate-translation-vscode",
+  "author": "Thiago Cordeiro <thiagocordeirooo@gmail.com>",
+  "icon": "assets/logo-i18n.png",
+  "galleryBanner": {
+    "color": "#08165f",
+    "theme": "dark"
+  },
+  "version": "0.0.9",
+  "publisher": "thiagocordeirooo",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thiagocordeirooo/generate-translation-vscode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/thiagocordeirooo/generate-translation-vscode/issues"
+  },
+  "engines": {
+    "vscode": "^1.0.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "angular",
+    "i18n",
+    "internationalization",
+    "translations",
+    "translate",
+    "ngx-translate"
+  ],
+  "activationEvents": [
+    "onCommand:generateTranslation.generate",
+    "onCommand:generateTranslation.fromSelectedText"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "generate-translation configuration",
+      "properties": {
+        "generate-translation.path": {
+          "type": "string",
+          "default": "/src/assets/i18n",
+          "description": "Path to find your i18n files."
+        },
+        "generate-translation.sort": {
+          "type": "boolean",
+          "default": true,
+          "description": "Sort object after inserting translation."
+        },
+        "generate-translation.replaceForExtensions": {
+          "type": "array",
+          "default": [
+            "html"
+          ],
+          "description": "Define extentions (html, js, ts, etc.) for which templateSnippetToReplace will be used."
+        },
+        "generate-translation.templateSnippetToReplace": {
+          "type": "string",
+          "default": "{{ 'i18n' | translate }}",
+          "description": "Template snippet to replace the selected text after generating a translation string. \n The string i18n will be replaced by the chosen key."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "generateTranslation.fromSelectedText",
+        "title": "Generate Translation: From selected text"
+      },
+      {
+        "command": "generateTranslation.generate",
+        "title": "Generate Translation: Generate"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "npm run compile && node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "typescript": "^3.1.4",
+    "vscode": "^1.1.25",
+    "tslint": "^5.8.0",
+    "@types/node": "^8.10.25",
+    "@types/mocha": "^2.2.42"
+  },
+  "dependencies": {
+    "dot-prop-immutable": "^1.5.0",
+    "fs": "0.0.1-security"
+  }
 }

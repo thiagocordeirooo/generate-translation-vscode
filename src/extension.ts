@@ -11,7 +11,6 @@ export const activate = (context: ExtensionContext) => {
 
 const generate = async () => {
 	const key = await window.showInputBox({
-		ignoreFocusOut: true,
 		prompt: `Which key do you want to use?`,
 	});
 
