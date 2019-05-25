@@ -13,11 +13,13 @@ export abstract class GenerateTranslation {
 
   public static async fromSelectedText(textSelection: string) {
     try {
-      const path = workspace
+
+      const path: string = workspace
         .getConfiguration("generate-translation")
         .get("path");
 
       let pathToFind = `${workspace.rootPath}${path}`;
+
       const translateFiles = GenerateTranslation.getFiles(
         pathToFind,
         ".json",
@@ -86,6 +88,47 @@ export abstract class GenerateTranslation {
     }
   }
 
+  public static async generateFiles() {
+
+    return new Promise(async (resolve) => {
+      const path: string = workspace
+        .getConfiguration("generate-translation")
+        .get("path");
+
+      let pathToFind = `${workspace.rootPath}${path}`;
+
+      if (!fs.existsSync(pathToFind)) {
+
+        let pathToSaveFile = await window.showInputBox({
+          prompt: `What is the way to save the translation file? root: \n ${workspace.rootPath}`,
+          placeHolder: 'path (default: src/assets/i18n)'
+        });
+
+        if (!pathToSaveFile)
+          pathToSaveFile = path;
+
+        GenerateTranslation.mkdirSyncRecursive(pathToFind);
+
+        const fileName: string = workspace
+          .getConfiguration("generate-translation")
+          .get("filename");
+
+        let fileNameToSave = await window.showInputBox({
+          prompt: `What is the name of the translation file?`,
+          placeHolder: 'filename (default: messages)'
+        });
+
+        if (!fileNameToSave)
+          fileNameToSave = fileName;
+
+        fs.appendFileSync(`${pathToFind}/${fileNameToSave}.en.json`, '{}');
+        fs.appendFileSync(`${pathToFind}/${fileNameToSave}.pt-br.json`, '{}');
+      }
+
+      resolve(true);
+    })
+  }
+
   private static replaceOnTranslate(textSelection: string) {
     const editor = window.activeTextEditor;
     const replaceForExtensions = <Array<string>>(
@@ -99,19 +142,21 @@ export abstract class GenerateTranslation {
         .get("templateSnippetToReplace")
     );
 
-    const extname = path.extname(editor.document.fileName);
+    if (editor && editor.document && editor.document.fileName) {
+      const extname = path.extname(editor.document.fileName);
 
-    if (
-      editor &&
-      replaceForExtensions.indexOf(extname.replace(".", "")) > -1 &&
-      templateSnippetToReplace
-    ) {
-      editor.edit(editBuilder => {
-        editBuilder.replace(
-          editor.selection,
-          templateSnippetToReplace.replace("i18n", textSelection)
-        );
-      });
+      if (
+        editor &&
+        replaceForExtensions.indexOf(extname.replace(".", "")) > -1 &&
+        templateSnippetToReplace
+      ) {
+        editor.edit(editBuilder => {
+          editBuilder.replace(
+            editor.selection,
+            templateSnippetToReplace.replace("i18n", textSelection)
+          );
+        });
+      }
     }
   }
 
@@ -201,4 +246,12 @@ export abstract class GenerateTranslation {
     "[object Object]" === Object.prototype.toString.call(object);
 
   private static normalizeKey = (key: string) => key.replace(" ", "_");
+
+  private static mkdirSyncRecursive = (directory: any) => {
+    var path = directory.replace(/\/$/, '').split('/');
+    for (var i = 1; i <= path.length; i++) {
+      var segment = path.slice(0, i).join('/');
+      segment.length > 0 && !fs.existsSync(segment) ? fs.mkdirSync(segment) : null;
+    }
+  };
 }
