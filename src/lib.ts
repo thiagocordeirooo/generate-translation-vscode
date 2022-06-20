@@ -1,47 +1,57 @@
-import { window, workspace } from "vscode";
+import * as vscode from 'vscode';
+
 import fs = require("fs");
 import path = require("path");
 
 let dotProp = require("dot-prop-immutable");
 
 export abstract class GenerateTranslation {
-  private static _editor = window.activeTextEditor;
+  private static _editor = vscode.window.activeTextEditor;
 
   public static generate(key: string) {
     GenerateTranslation.fromSelectedText(key);
   }
 
   public static async fromSelectedText(textSelection: string) {
-    try {
-      const path = workspace
-        .getConfiguration("generate-translation")
-        .get("path");
 
-      let pathToFind = `${workspace.rootPath}${path}`;
-      const translateFiles = GenerateTranslation.getFiles(
-        pathToFind,
-        ".json",
-        null,
-        []
-      );
+    const path = vscode.workspace
+      .getConfiguration("generate-translation")
+      .get("path");
 
-      for (let i = 0; i < translateFiles.length; i++) {
-        const file = translateFiles[i];
-        let translateObject = JSON.parse(fs.readFileSync(file, "utf-8"));
+    const flatten = vscode.workspace
+      .getConfiguration("generate-translation")
+      .get("flatten");
 
-        const translateObjectName = file.replace(`${pathToFind}/`, "");
+    let pathToFind = `${vscode.workspace.rootPath}${path}`;
+    const translateFiles = GenerateTranslation.getFiles(
+      pathToFind,
+      ".json",
+      null,
+      []
+    );
 
-        if (dotProp.get(translateObject, textSelection)) {
-          window.showErrorMessage(
-            `${textSelection} already exists in the file ${translateObjectName}.`
-          );
-        } else {
-          const value = await window.showInputBox({
-            prompt: `What is value in ${translateObjectName} ?`,
-            placeHolder: textSelection
-          });
+    for (let i = 0; i < translateFiles.length; i++) {
+      const file = translateFiles[i];
+      let translateObject = JSON.parse(fs.readFileSync(file, "utf-8"));
 
-          if (value) {
+      const translateObjectName = file.replace(`${pathToFind}/`, "");
+
+
+      if ((!flatten && dotProp.get(translateObject, textSelection)) || (flatten && translateObject[textSelection])) {
+        vscode.window.showErrorMessage(
+          `${textSelection} already exists in the file ${translateObjectName}.`
+        );
+      } else {
+        const value = await vscode.window.showInputBox({
+          prompt: `What is value in ${translateObjectName} ?`,
+          placeHolder: textSelection
+        });
+
+        if (value) {
+          if (flatten) {
+            translateObject[textSelection] = value;
+          }
+          else {
             const arrTextSelection = textSelection.split(".");
             arrTextSelection.pop();
 
@@ -60,12 +70,7 @@ export abstract class GenerateTranslation {
                 newObject
               );
             }
-
-            translateObject = dotProp.set(
-              translateObject,
-              GenerateTranslation.normalizeKey(textSelection),
-              value
-            );
+          }
 
             await GenerateTranslation.updateFile(
               file,
@@ -73,33 +78,34 @@ export abstract class GenerateTranslation {
               translateObjectName
             );
 
-            window.showInformationMessage(
+            vscode.window.showInformationMessage(
               `${textSelection} added in the file ${translateObjectName}.`
             );
 
             GenerateTranslation.replaceOnTranslate(textSelection);
           }
         }
+
+
+
       }
-    } catch (error) {
-      window.showErrorMessage(error.message);
+
     }
-  }
 
   private static replaceOnTranslate(textSelection: string) {
-    const editor = window.activeTextEditor;
+    const editor = vscode.window.activeTextEditor as vscode.TextEditor | undefined;
     const replaceForExtensions = <Array<string>>(
-      workspace
+      vscode.workspace
         .getConfiguration("generate-translation")
         .get("replaceForExtensions")
     );
     const templateSnippetToReplace = <string>(
-      workspace
+      vscode.workspace
         .getConfiguration("generate-translation")
         .get("templateSnippetToReplace")
     );
 
-    const extname = path.extname(editor.document.fileName);
+    const extname = path.extname(editor!.document.fileName);
 
     if (
       editor &&
@@ -129,12 +135,13 @@ export abstract class GenerateTranslation {
         tabSizeEditor = GenerateTranslation._editor.options.tabSize;
       }
 
-      const sort = workspace
+      const sort = vscode.workspace
         .getConfiguration("generate-translation")
         .get("sort");
       if (sort) {
         translateObject = GenerateTranslation.sortObject(translateObject);
       }
+
 
       fs.writeFile(
         file,
@@ -177,7 +184,7 @@ export abstract class GenerateTranslation {
       return result;
     } catch {
       throw new Error(
-        "No translation file was found. Check the path configured in the extension."
+        "No translation file was found in " + basePath + ". Check the path configured in the extension."
       );
     }
   };
