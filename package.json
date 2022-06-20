@@ -65,6 +65,11 @@
           ],
           "description": "Define extentions (html, js, ts, etc.) for which templateSnippetToReplace will be used."
         },
+        "generate-translation.restrictToDefaultLanguage": {
+          "type": "string",
+          "default": "",
+          "description": "Restrict translations to the default language"
+        },
         "generate-translation.templateSnippetToReplace": {
           "type": "string",
           "default": "{{ 'i18n' | translate }}",

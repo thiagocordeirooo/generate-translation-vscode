@@ -22,6 +22,10 @@ export abstract class GenerateTranslation {
       .getConfiguration("generate-translation")
       .get("flatten");
 
+    const restrictToDefaultLanguage = vscode.workspace
+      .getConfiguration("generate-translation")
+      .get("restrictToDefaultLanguage");
+
     let pathToFind = `${vscode.workspace.rootPath}${path}`;
     const translateFiles = GenerateTranslation.getFiles(
       pathToFind,
@@ -31,46 +35,49 @@ export abstract class GenerateTranslation {
     );
 
     for (let i = 0; i < translateFiles.length; i++) {
+
       const file = translateFiles[i];
       let translateObject = JSON.parse(fs.readFileSync(file, "utf-8"));
 
       const translateObjectName = file.replace(`${pathToFind}/`, "");
 
+      if (restrictToDefaultLanguage === "" || translateObjectName.toString() === (restrictToDefaultLanguage + ".json")) {
 
-      if ((!flatten && dotProp.get(translateObject, textSelection)) || (flatten && translateObject[textSelection])) {
-        vscode.window.showErrorMessage(
-          `${textSelection} already exists in the file ${translateObjectName}.`
-        );
-      } else {
-        const value = await vscode.window.showInputBox({
-          prompt: `What is value in ${translateObjectName} ?`,
-          placeHolder: textSelection
-        });
 
-        if (value) {
-          if (flatten) {
-            translateObject[textSelection] = value;
-          }
-          else {
-            const arrTextSelection = textSelection.split(".");
-            arrTextSelection.pop();
+        if ((!flatten && dotProp.get(translateObject, textSelection)) || (flatten && translateObject[textSelection])) {
+          vscode.window.showErrorMessage(
+            `${textSelection} already exists in the file ${translateObjectName}.`
+          );
+        } else {
+          const value = await vscode.window.showInputBox({
+            prompt: `What is value in ${translateObjectName} ?`,
+            placeHolder: textSelection
+          });
 
-            const valueLastKey = dotProp.get(
-              translateObject,
-              arrTextSelection.join(".")
-            );
-            if (valueLastKey && typeof valueLastKey === "string") {
-              const newObject = {
-                [arrTextSelection[arrTextSelection.length - 1]]: valueLastKey
-              };
-
-              translateObject = dotProp.set(
-                translateObject,
-                arrTextSelection.join("."),
-                newObject
-              );
+          if (value) {
+            if (flatten) {
+              translateObject[textSelection] = value;
             }
-          }
+            else {
+              const arrTextSelection = textSelection.split(".");
+              arrTextSelection.pop();
+
+              const valueLastKey = dotProp.get(
+                translateObject,
+                arrTextSelection.join(".")
+              );
+              if (valueLastKey && typeof valueLastKey === "string") {
+                const newObject = {
+                  [arrTextSelection[arrTextSelection.length - 1]]: valueLastKey
+                };
+
+                translateObject = dotProp.set(
+                  translateObject,
+                  arrTextSelection.join("."),
+                  newObject
+                );
+              }
+            }
 
             await GenerateTranslation.updateFile(
               file,
@@ -86,11 +93,11 @@ export abstract class GenerateTranslation {
           }
         }
 
-
-
       }
 
     }
+
+  }
 
   private static replaceOnTranslate(textSelection: string) {
     const editor = vscode.window.activeTextEditor as vscode.TextEditor | undefined;
