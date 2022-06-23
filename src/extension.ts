@@ -10,28 +10,39 @@ export const activate = (context: ExtensionContext) => {
 };
 
 const generate = async () => {
-	const key = await window.showInputBox({
-		prompt: `Which key do you want to use?`,
-	});
+	GenerateTranslation.generateFiles()
+		.then(async () => {
+			const key = await window.showInputBox({
+				prompt: `Which key do you want to use?`,
+			});
 
-	if (key) {
-		GenerateTranslation.generate(key);
-	}
+			if (key) {
+				GenerateTranslation.generate(key);
+			}
+		}).catch((err) => {
+			console.log(err);
+		});
 };
 
 const fromSelectedText = () => {
-	const editor = window.activeTextEditor;
-	if (!editor) {
-		return;
-	}
+	GenerateTranslation.generateFiles()
+		.then(async () => {
+			const editor = window.activeTextEditor;
+			if (!editor) {
+				return;
+			}
 
-	const selection = editor.selection;
-	const textSelection = editor.document.getText(selection);
+			const selection = editor.selection;
+			const textSelection = editor.document.getText(selection);
 
-	if (!textSelection) {
-		window.showWarningMessage('Nothing selected.');
-		return;
-	}
+			if (!textSelection) {
+				window.showWarningMessage('Nothing selected.');
+				return;
+			}
 
-	GenerateTranslation.fromSelectedText(textSelection);
+			GenerateTranslation.fromSelectedText(textSelection);
+		}).catch((err) => {
+			console.log(err);
+		});
+
 };
