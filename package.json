@@ -35,7 +35,8 @@
   ],
   "activationEvents": [
     "onCommand:generateTranslation.generate",
-    "onCommand:generateTranslation.fromSelectedText"
+    "onCommand:generateTranslation.fromSelectedTranslatedText",
+    "onCommand:generateTranslation.fromSelectedTranslationKey"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -47,6 +48,11 @@
           "type": "string",
           "default": "/src/assets/i18n",
           "description": "Path to find your i18n files."
+        },
+        "generate-translation.defaultLanguageFile": {
+          "type": "string",
+          "default": "messages.en-us.json",
+          "description": "Default language file (for extracting existing translation)."
         },
         "generate-translation.sort": {
           "type": "boolean",
@@ -69,8 +75,12 @@
     },
     "commands": [
       {
-        "command": "generateTranslation.fromSelectedText",
-        "title": "Generate Translation: From selected text"
+        "command": "generateTranslation.fromSelectedTranslatedText",
+        "title": "Generate Translation: From selection of text in a specified language"
+      },
+      {
+        "command": "generateTranslation.fromSelectedTranslationKey",
+        "title": "Generate Translation: From selection with the translation key"
       },
       {
         "command": "generateTranslation.generate",

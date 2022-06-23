@@ -8,10 +8,18 @@ export abstract class GenerateTranslation {
   private static _editor = window.activeTextEditor;
 
   public static generate(key: string) {
-    GenerateTranslation.fromSelectedText(key);
+    GenerateTranslation.fromGivenKey(key);
   }
 
-  public static async fromSelectedText(textSelection: string) {
+  public static async fromSelectedTranslationKey(textSelection: string) {
+    await this.fromGivenKey(textSelection);
+  }
+
+  public static async fromSelectedTranslatedText(key: string, translationString: string, translationLang: string) {
+    await this.fromGivenKey(key, translationString, translationLang);
+  }
+
+  public static async fromGivenKey(key: string, translationString?: string, translationLang?: string) {
     try {
       const path = workspace
         .getConfiguration("generate-translation")
@@ -31,18 +39,20 @@ export abstract class GenerateTranslation {
 
         const translateObjectName = file.replace(`${pathToFind}/`, "");
 
-        if (dotProp.get(translateObject, textSelection)) {
+        if (dotProp.get(translateObject, key)) {
           window.showErrorMessage(
-            `${textSelection} already exists in the file ${translateObjectName}.`
+            `${key} already exists in the file ${translateObjectName}.`
           );
         } else {
-          const value = await window.showInputBox({
-            prompt: `What is value in ${translateObjectName} ?`,
-            placeHolder: textSelection
-          });
+          const value = (translationLang===translateObjectName) ?
+            translationString :
+            await window.showInputBox({
+              prompt: `What is value in ${translateObjectName} ?`,
+              placeHolder: key
+            });
 
           if (value) {
-            const arrTextSelection = textSelection.split(".");
+            const arrTextSelection = key.split(".");
             arrTextSelection.pop();
 
             const valueLastKey = dotProp.get(
@@ -63,7 +73,7 @@ export abstract class GenerateTranslation {
 
             translateObject = dotProp.set(
               translateObject,
-              GenerateTranslation.normalizeKey(textSelection),
+              GenerateTranslation.normalizeKey(key),
               value
             );
 
@@ -74,10 +84,10 @@ export abstract class GenerateTranslation {
             );
 
             window.showInformationMessage(
-              `${textSelection} added in the file ${translateObjectName}.`
+              `${key} added in the file ${translateObjectName}.`
             );
 
-            GenerateTranslation.replaceOnTranslate(textSelection);
+            GenerateTranslation.replaceOnTranslate(key);
           }
         }
       }
